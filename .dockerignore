@@ -1,0 +1,61 @@
+# Dockerfile ignore patterns
+
+# Build artifacts
+server
+server_unix
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test artifacts
+*.test
+*.out
+coverage.out
+coverage.html
+test_results.json
+integration_test_report.json
+
+# Documentation
+*.md
+docs/
+
+# Development files
+.env
+.env.local
+.env.example
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Version control
+.git/
+.gitignore
+
+# Dependencies that will be downloaded
+vendor/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Test directories that aren't needed in container
+test/
+benchmark/
+mocks/
