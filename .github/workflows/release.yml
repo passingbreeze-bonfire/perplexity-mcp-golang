@@ -98,9 +98,23 @@ jobs:
           
           ### 📋 Usage
           
-          \`\`\`bash
-          # Run the MCP server
-          docker run -p 8080:8080 -e PERPLEXITY_API_KEY=your_key ghcr.io/${REPO_NAME}:${{ github.event.inputs.version }}
+          \`\`\`json
+          {
+            "mcpServers": {
+              "perplexity-mcp-golang": {
+              "command": "docker",
+              "args": [
+                "run",
+                "--rm",
+                "-i",
+                "-e",
+                "PERPLEXITY_API_KEY=your-api-key-here",
+                "-e",
+                "PERPLEXITY_MODEL=your-model-here",
+                "ghcr.io/${REPO_NAME}:${{ github.event.inputs.version }}"
+              ]
+            }
+          }
           \`\`\`
           
           ### 🏗️ Build Information
