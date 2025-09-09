@@ -1,0 +1,11 @@
+{
+    "go.goroot": "/Users/a17236/.local/share/mise/installs/go/1.25.1",
+    "debug.javascript.defaultRuntimeExecutable": {
+        "pwa-node": "/Users/a17236/.local/share/mise/shims/node"
+    },
+    "go.alternateTools": {
+        "go": "/Users/a17236/.local/share/mise/shims/go",
+        "gopls": "/Users/a17236/.local/share/mise/shims/gopls"
+    },
+    "zig.path": "/Users/a17236/.local/share/mise/installs/zig/0.15.1/bin/zig"
+}

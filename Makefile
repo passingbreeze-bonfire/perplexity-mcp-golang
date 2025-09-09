@@ -7,9 +7,9 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
-BINARY_NAME=server
-BINARY_UNIX=$(BINARY_NAME)_unix
-MAIN_PATH=./cmd/server/main.go
+BINARY_NAME=pplxity_mcp_server
+BINARY_UNIX=$(BINARY_NAME)
+MAIN_PATH=./cmd/server
 
 # Build flags
 LDFLAGS=-ldflags "-w -s"

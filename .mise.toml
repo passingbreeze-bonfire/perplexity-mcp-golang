@@ -1,0 +1,40 @@
+[tools]
+go = "1.25.1"
+
+[env]
+# input api key when you test
+PERPLEXITY_API_KEY = ""
+
+[tasks.fmt]
+alias = "fmt"
+description = "Format the code"
+run = "make fmt"
+
+[tasks.lint]
+alias = "lint"
+description = "Lint the code"
+run = "make lint"
+depends = ["fmt"]
+
+[tasks.build]
+alias = "build"
+description = "Build the project"
+run = "make build"
+depends = ["lint"]
+
+[tasks.clean]
+alias = "clean"
+description = "Clean the project"
+run = "make clean"
+
+[tasks.test]
+alias = "tst"
+description = "Run tests"
+run = "make test-coverage"
+depends = ["build"]
+
+[tasks.run-dev]
+alias = "dev"
+description = "Run the development server"
+run = "make dev"
+depends = ["build"]

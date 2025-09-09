@@ -1,7 +1,7 @@
 # Multi-stage Dockerfile for Perplexity MCP Server (dynamic linking, wolfi-base)
 
 # Build stage
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25.1-trixie AS builder
 
 # Install build dependencies
 # Install build dependencies (cgo enabled build for dynamic linking)
@@ -45,9 +45,14 @@ COPY --from=builder --chown=1001:1001 /app/server /app/server
 # Switch to non-root user
 USER appuser
 
+# Expose HTTP port
+EXPOSE 8080
+
 # Set default environment variables
 ENV LOG_LEVEL=info \
   REQUEST_TIMEOUT_SECONDS=30 \
+  HTTP_HOST=0.0.0.0 \
+  HTTP_PORT=8080 \
   TZ=UTC
 
 # Run the server

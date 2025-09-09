@@ -1,28 +1,16 @@
+# See the dedicated "version" documentation section.
+version: "2"
+
 run:
   timeout: 5m
+  relative-path-mode: gomod
   modules-download-mode: readonly
+  issues-exit-code: 2
+  tests: false
+  allow-parallel-runners: true
+  allow-serial-runners: true
+  go: '1.25.1'
+  concurrency: 2
 
 linters:
-  enable:
-    - errcheck
-    - goimports
-    - golint
-    - govet
-    - ineffassign
-    - misspell
-    - staticcheck
-    - unused
-    - gosec
-    - gocritic
-    - gofmt
-    - gocyclo
-    - goconst
-
-linters-settings:
-  goimports:
-    local-prefixes: github.com/yourusername/perplexity-mcp-golang
-  gocyclo:
-    min-complexity: 15
-  goconst:
-    min-len: 2
-    min-occurrences: 2
+  default: standard
