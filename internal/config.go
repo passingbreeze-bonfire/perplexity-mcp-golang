@@ -12,8 +12,6 @@ type Config struct {
 	DefaultModel     string
 	RequestTimeout   time.Duration
 	LogLevel         string
-	HTTPHost         string
-	HTTPPort         string
 }
 
 func NewConfig() (*Config, error) {
@@ -27,8 +25,6 @@ func NewConfig() (*Config, error) {
 		DefaultModel:     getEnvWithDefault("PERPLEXITY_DEFAULT_MODEL", "sonar"),
 		RequestTimeout:   30 * time.Second,
 		LogLevel:         getEnvWithDefault("LOG_LEVEL", "INFO"),
-		HTTPHost:         getEnvWithDefault("HTTP_HOST", "0.0.0.0"),
-		HTTPPort:         getEnvWithDefault("HTTP_PORT", "8080"),
 	}
 
 	if timeoutStr := os.Getenv("REQUEST_TIMEOUT"); timeoutStr != "" {
@@ -53,12 +49,6 @@ func (c *Config) Validate() error {
 	}
 	if c.RequestTimeout <= 0 {
 		return fmt.Errorf("request timeout must be positive")
-	}
-	if c.HTTPHost == "" {
-		return fmt.Errorf("HTTP host is required")
-	}
-	if c.HTTPPort == "" {
-		return fmt.Errorf("HTTP port is required")
 	}
 	return nil
 }

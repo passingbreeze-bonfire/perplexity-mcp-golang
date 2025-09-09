@@ -3,9 +3,14 @@
 # Build stage
 FROM golang:1.25.1-trixie AS builder
 
-# Install build dependencies
+# Install build dependencies  
 # Install build dependencies (cgo enabled build for dynamic linking)
-RUN apk add --no-cache git ca-certificates tzdata build-base
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    ca-certificates \
+    tzdata \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -25,7 +30,7 @@ COPY . .
 RUN CGO_ENABLED=1 GOOS=linux go build \
   -trimpath \
   -ldflags='-w -s' \
-  -o server \
+  -o perplexity-mcp-server \
   ./cmd/server
 
 # Final stage - minimal runtime image
@@ -40,7 +45,7 @@ RUN apk --no-cache add ca-certificates tzdata \
 WORKDIR /app
 
 # Copy binary from builder stage with proper ownership
-COPY --from=builder --chown=1001:1001 /app/server /app/server
+COPY --from=builder --chown=1001:1001 /app/perplexity-mcp-server /app/perplexity-mcp-server
 
 # Switch to non-root user
 USER appuser
@@ -56,4 +61,4 @@ ENV LOG_LEVEL=info \
   TZ=UTC
 
 # Run the server
-ENTRYPOINT ["./server"]
+ENTRYPOINT ["./perplexity-mcp-server"]

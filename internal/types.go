@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -104,14 +105,14 @@ type APIUsage struct {
 }
 
 type APIChatResponse struct {
-	ID        string      `json:"id"`
-	Object    string      `json:"object"`
-	Created   int64       `json:"created"`
-	Model     string      `json:"model"`
-	Choices   []APIChoice `json:"choices"`
-	Usage     APIUsage    `json:"usage"`
-	Citations []Citation  `json:"citations,omitempty"`
-	Sources   []Source    `json:"sources,omitempty"`
+	ID        string          `json:"id"`
+	Object    string          `json:"object"`
+	Created   int64           `json:"created"`
+	Model     string          `json:"model"`
+	Choices   []APIChoice     `json:"choices"`
+	Usage     APIUsage        `json:"usage"`
+	Citations json.RawMessage `json:"citations,omitempty"`
+	Sources   []Source        `json:"sources,omitempty"`
 }
 
 func (r *APIChatResponse) GetContent() string {

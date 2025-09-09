@@ -12,26 +12,26 @@ A Model Context Protocol (MCP) server that provides access to Perplexity AI's So
 - `sonar-deep-research` - Comprehensive deep research
 
 🏗️ **Clean Architecture**:
-- Domain-driven design with clear layer separation
-- Dependency injection for testability
+- Simple, maintainable structure with clear separation
 - Single-thread-first approach with context-based timeouts
+- Comprehensive error handling and validation
 
 🔒 **Security First**:
 - TLS 1.2+ enforcement
 - Input validation and sanitization
 - Secure logging without sensitive data exposure
-- Rate limiting and resource bounds
+- Environment-based secret management
 
 📊 **Performance & Testing**:
 - Comprehensive test coverage
+- Integration tests for stdio transport
 - Performance benchmarks for optimization
-- Integration tests with mock dependencies
 
 ## Quick Start
 
 ### Prerequisites
 
-- Go 1.22 or later
+- Go 1.25.1 or later
 - [Perplexity API key](https://docs.perplexity.ai/docs/getting-started)
 
 ### Installation
@@ -41,15 +41,15 @@ A Model Context Protocol (MCP) server that provides access to Perplexity AI's So
 git clone https://github.com/yourusername/perplexity-mcp-golang
 cd perplexity-mcp-golang
 
-# Build server
-go build -o server cmd/server/main.go
+# Set up environment
+cp .env.example .env
+# Edit .env to add your PERPLEXITY_API_KEY
 
-# Set environment variables
-export PERPLEXITY_API_KEY="your-api-key-here"
-export LOG_LEVEL="info"
+# Build server
+make build
 
 # Run server
-./server
+./perplexity-mcp-server
 ```
 
 ### Usage with MCP Clients
@@ -64,9 +64,8 @@ The server exposes a search tool through the MCP protocol:
     "query": "What is quantum computing?",
     "model": "sonar",
     "search_mode": "web",
-    "date_range": "week",
-    "sources": ["arxiv.org", "nature.com"],
-    "max_tokens": 1000
+    "max_tokens": 1000,
+    "sources": ["arxiv.org", "nature.com"]
   }
 }
 ```
@@ -75,9 +74,8 @@ The server exposes a search tool through the MCP protocol:
 - `query` (required): The search query
 - `model` (optional): Sonar model to use (sonar, sonar-pro, sonar-reasoning, sonar-reasoning-pro, sonar-deep-research)
 - `search_mode` (optional): Search mode (web, academic, news)
-- `date_range` (optional): Time filter (day, week, month, year)
-- `sources` (optional): List of domains to search within
 - `max_tokens` (optional): Maximum response tokens
+- `sources` (optional): List of domains to search within
 - `options` (optional): Additional options like temperature, top_p
 
 ## Configuration
@@ -93,43 +91,26 @@ Configure the server using environment variables:
 
 ## Architecture
 
+Simple, maintainable structure focused on clarity and reliability:
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    cmd/server                           │
-│                  (Entry Point)                         │
+│                 (Entry Point)                          │
+│             • main.go                                   │
+│             • integration_test.go                      │
 └─────────────────────┬───────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────┐
-│                MCP Adapters                             │
+│                   internal/                            │
 │  ┌─────────────────┐  ┌─────────────────────────────────┤
-│  │   MCP Server    │  │        MCP Tools                │
-│  │   Handlers      │  │  • search.go                   │
+│  │   client.go     │  │        tools.go                 │
+│  │  (HTTP Client)  │  │    (MCP Tool Handler)           │
 │  └─────────────────┘  └─────────────────────────────────┤
-└─────────────────────┬───────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────┐
-│                  Use Cases                              │
-│  ┌──────────────────────────────────────────────────────┤
-│  │            SearchUseCase                             │
-│  └──────────────────────────────────────────────────────┤
-└─────────────────────┬───────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────┐
-│                   Domain                                │
 │  ┌─────────────────┐  ┌─────────────────────────────────┤
-│  │   Interfaces    │  │         Entities                │
-│  │   • Client      │  │  • SearchRequest                │
-│  │   • Logger      │  │  • SearchResult                 │
-│  │   • Config      │  │  • Usage, Citation, Source      │
+│  │   config.go     │  │        types.go                 │
+│  │ (Configuration) │  │   (Data Structures)             │
 │  └─────────────────┘  └─────────────────────────────────┤
-└─────────────────────┬───────────────────────────────────┘
-                      │
-┌─────────────────────▼───────────────────────────────────┐
-│                Infrastructure                           │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌───────────┤
-│  │ PerplexityClient│  │     Config      │  │  Logger   │
-│  │   (HTTP)        │  │   (Env Vars)    │  │ (slog)    │
-│  └─────────────────┘  └─────────────────┘  └───────────┤
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -150,72 +131,81 @@ Professional-grade reasoning model for complex queries requiring logical analysi
 ### sonar-deep-research
 Comprehensive research model that performs thorough, multi-step research with extensive citations.
 
-## Search Modes
-
-- **web**: General web search across all sources
-- **academic**: Focus on academic papers and scholarly sources
-- **news**: Recent news articles and current events
-
-## Date Ranges
-
-Filter results by recency:
-- **day**: Last 24 hours
-- **week**: Last 7 days
-- **month**: Last 30 days
-- **year**: Last 12 months
-
 ## Development
 
 ### Running Tests
 
 ```bash
 # Run all tests
-go test ./...
+make test
 
 # Run with coverage
-go test -cover ./...
+make test-coverage
 
-# Run specific test package
-go test ./internal/core/usecases
+# Run integration tests
+make test-integration
 
 # Run benchmarks
-go test -bench=. ./test/benchmark
+make test-benchmark
 ```
 
 ### Building with Docker
 
 ```bash
 # Build Docker image
-docker build -t perplexity-mcp-server .
+make docker-build
 
 # Run container
-docker run -e PERPLEXITY_API_KEY="your-key" perplexity-mcp-server
+make docker-run
 ```
 
 ### Project Structure
 
 ```
 .
-├── cmd/server/          # Application entry point
-├── internal/
-│   ├── adapters/        # External adapters (MCP, Perplexity)
-│   ├── core/           # Business logic
-│   │   ├── domain/     # Domain entities and interfaces
-│   │   └── usecases/   # Use case implementations
-│   └── infrastructure/ # Infrastructure implementations
-├── test/               # Test files
-│   ├── integration/    # Integration tests
-│   └── benchmark/      # Performance benchmarks
-└── docs/              # Documentation
+├── cmd/server/          # Application entry point and integration tests
+│   ├── main.go         # Server main function
+│   └── integration_test.go # Integration tests
+├── internal/           # Internal packages
+│   ├── client.go       # Perplexity API client
+│   ├── config.go       # Configuration management
+│   ├── tools.go        # MCP tool implementations
+│   └── types.go        # Data types and structures
+├── build/              # Build artifacts directory
+├── Dockerfile          # Multi-stage Docker build
+├── Makefile           # Build automation
+├── .mise.toml         # Development environment setup
+├── .env.example       # Environment variable template
+├── go.mod             # Go module definition
+└── go.sum             # Go module checksums
+```
+
+## Development Tools
+
+This project uses `mise` for development environment management:
+
+```bash
+# Install mise if not already installed
+# See: https://mise.jdx.dev/getting-started.html
+
+# Install project dependencies
+mise install
+
+# Run development tasks
+mise run fmt     # Format code
+mise run lint    # Lint code
+mise run build   # Build project
+mise run test    # Run tests
+mise run dev     # Start development server
 ```
 
 ## Security Considerations
 
-- **API Key Protection**: Never commit API keys. Use environment variables.
+- **API Key Protection**: Never commit API keys. Use `.env` file for local development.
 - **Input Validation**: All inputs are validated and sanitized.
 - **TLS Enforcement**: TLS 1.2+ required for API communications.
-- **Rate Limiting**: Built-in rate limiting to prevent abuse.
 - **Resource Bounds**: Maximum query lengths and response sizes enforced.
+- **Secure Logging**: Sensitive information is never logged.
 
 ## Contributing
 

@@ -51,7 +51,7 @@ func NewPerplexityClient(apiKey string) (*PerplexityClient, error) {
 		},
 		apiKey:  apiKey,
 		baseURL: BaseURL,
-		logger:  log.New(os.Stdout, "[PERPLEXITY] ", log.LstdFlags|log.Lshortfile),
+		logger:  log.New(os.Stderr, "[PERPLEXITY] ", log.LstdFlags|log.Lshortfile),
 	}, nil
 }
 
@@ -129,9 +129,19 @@ func (c *PerplexityClient) apiToSearchResult(apiResp APIChatResponse) SearchResu
 		Created: apiResp.GetCreatedTime(),
 	}
 
-	if len(apiResp.Citations) > 0 {
-		result.Citations = make([]Citation, len(apiResp.Citations))
-		copy(result.Citations, apiResp.Citations)
+	if len(apiResp.Citations) > 0 && string(apiResp.Citations) != "null" {
+		var citations []Citation
+		if err := json.Unmarshal(apiResp.Citations, &citations); err != nil {
+			var citationStr string
+			if errStr := json.Unmarshal(apiResp.Citations, &citationStr); errStr == nil {
+				if errStrParse := json.Unmarshal([]byte(citationStr), &citations); errStrParse != nil {
+					c.logger.Printf("Warning: failed to parse citations string: %v", errStrParse)
+				}
+			} else {
+				c.logger.Printf("Warning: failed to unmarshal citations: %v", err)
+			}
+		}
+		result.Citations = citations
 	}
 
 	if len(apiResp.Sources) > 0 {
@@ -172,7 +182,11 @@ func (c *PerplexityClient) makeRequest(ctx context.Context, apiReq APIChatReques
 		}
 		return nil, fmt.Errorf("request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			c.logger.Printf("Warning: failed to close response body: %v", err)
+		}
+	}()
 
 	limitedReader := io.LimitReader(resp.Body, MaxResponseSize)
 	respBody, err := io.ReadAll(limitedReader)

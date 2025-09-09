@@ -7,7 +7,7 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
-BINARY_NAME=pplxity_mcp_server
+BINARY_NAME=perplexity-mcp-server
 BINARY_UNIX=$(BINARY_NAME)
 MAIN_PATH=./cmd/server
 
@@ -52,17 +52,17 @@ test-coverage:
 # Run integration tests
 test-integration:
 	@echo "Running integration tests..."
-	$(GOTEST) -v ./test/integration/
+	$(GOTEST) -v ./cmd/server/ -run "Test.*Integration"
 
 # Run quick integration tests
 test-quick:
 	@echo "Running quick integration tests..."
-	$(GOTEST) -v ./test/integration/ -run TestQuickIntegrationSuite
+	$(GOTEST) -v ./cmd/server/ -run "TestStdioTransportBasic"
 
 # Run benchmarks
 test-benchmark:
 	@echo "Running benchmarks..."
-	$(GOTEST) -v ./test/benchmark/ -bench=. -benchmem
+	$(GOTEST) -v ./cmd/server/ -bench=. -benchmem
 
 # Install dependencies
 deps:

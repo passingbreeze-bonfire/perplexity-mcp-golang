@@ -2,7 +2,8 @@
 go = "1.25.1"
 
 [env]
-# input api key when you test
+# SECURITY: Never put real API keys in version control!
+# Copy .env.example to .env and set your actual PERPLEXITY_API_KEY there
 PERPLEXITY_API_KEY = ""
 
 [tasks.fmt]
@@ -38,3 +39,9 @@ alias = "dev"
 description = "Run the development server"
 run = "make dev"
 depends = ["build"]
+
+[tasks.build-docker-dev]
+alias = "docker-dev"
+description = "Build the Docker image for development"
+run = "docker build -t perplexity-mcp:dev ."
+
