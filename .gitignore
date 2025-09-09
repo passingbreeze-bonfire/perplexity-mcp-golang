@@ -840,6 +840,6 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 ### mise ###
-.mise*
+.mise.toml
 
 # windows,macos,linux,visualstudio,visualstudiocode,go,terraform,python,java,jetbrains+all,git
