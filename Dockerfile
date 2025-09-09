@@ -50,14 +50,9 @@ COPY --from=builder --chown=1001:1001 /app/perplexity-mcp-server /app/perplexity
 # Switch to non-root user
 USER appuser
 
-# Expose HTTP port
-EXPOSE 8080
-
 # Set default environment variables
 ENV LOG_LEVEL=info \
-  REQUEST_TIMEOUT_SECONDS=30 \
-  HTTP_HOST=0.0.0.0 \
-  HTTP_PORT=8080 \
+  REQUEST_TIMEOUT=300 \
   TZ=UTC
 
 # Run the server
