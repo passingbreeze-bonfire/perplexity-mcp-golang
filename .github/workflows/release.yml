@@ -102,17 +102,18 @@ jobs:
           {
             "mcpServers": {
               "perplexity-mcp-golang": {
-              "command": "docker",
-              "args": [
-                "run",
-                "--rm",
-                "-i",
-                "-e",
-                "PERPLEXITY_API_KEY=your-api-key-here",
-                "-e",
-                "PERPLEXITY_MODEL=your-model-here",
-                "ghcr.io/${REPO_NAME}:${{ github.event.inputs.version }}"
-              ]
+                "command": "docker",
+                "args": [
+                  "run",
+                  "--rm",
+                  "-i",
+                  "-e",
+                  "PERPLEXITY_API_KEY=your-api-key-here",
+                  "-e",
+                  "PERPLEXITY_MODEL=your-model-here",
+                  "ghcr.io/${REPO_NAME}:${{ github.event.inputs.version }}"
+                ]
+              }
             }
           }
           \`\`\`
